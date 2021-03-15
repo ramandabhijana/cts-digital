@@ -54,6 +54,8 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         home(db)
+        logout()
+        login(db,hashFunction)
     }
 }
 
