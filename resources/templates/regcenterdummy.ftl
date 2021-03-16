@@ -1,6 +1,6 @@
 <html>
 <body>
-<form action="/manager/signup" method="post">
+<form action="/manager/regcenter" method="post">
     <button type="submit">POST</button>
 </form>
 </body>

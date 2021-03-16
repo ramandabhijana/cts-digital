@@ -39,8 +39,10 @@ data class TestCenterManager(
     }
   }
 
-  fun registerCenter(name: String, address: String) {
-    TODO("Not yet implemented")
+  fun registerCenter(name: String, address: String): TestCenter? {
+    if (name.isBlank() || address.isBlank())
+      return null
+    return TestCenter(name, address)
   }
 
 }

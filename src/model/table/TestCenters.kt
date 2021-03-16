@@ -1,9 +1,8 @@
 package com.sestikom.ctsdigital.model.table
 
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.dao.*
 
-object TestCenters: Table() {
-  val centerId = integer("center_id").primaryKey()
+object TestCenters: IntIdTable() {
   val name = varchar("center_name", 256)
   val address = varchar("address", 256)
 }

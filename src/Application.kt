@@ -1,21 +1,18 @@
 package com.sestikom.ctsdigital
 
-import com.sestikom.ctsdigital.auth.hash
-import com.sestikom.ctsdigital.auth.hashKey
-import com.sestikom.ctsdigital.model.session.CTSSession
-import com.sestikom.ctsdigital.repository.CTSRepository
-import com.sestikom.ctsdigital.repository.DatabaseFactory
+import com.sestikom.ctsdigital.auth.*
+import com.sestikom.ctsdigital.model.session.*
+import com.sestikom.ctsdigital.repository.*
 import com.sestikom.ctsdigital.webapp.*
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.routing.*
-import io.ktor.http.*
 import freemarker.cache.*
+import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.gson.*
+import io.ktor.http.*
 import io.ktor.locations.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import io.ktor.sessions.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -56,6 +53,8 @@ fun Application.module(testing: Boolean = false) {
         home(db)
         logout()
         login(db,hashFunction)
+        signup(db, hashFunction)
+        registerCenter(db, hashFunction)
     }
 }
 
