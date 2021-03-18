@@ -29,8 +29,8 @@ fun Route.login(db: Repository, hashFunction: (String) -> String) {
     }
 
     post<Login> {
-        val username = "abhijana"
-        val password = "abhijana123"
+        val username = "abhi180031251"
+        val password = "password123"
         val response = TestCenterManager().login(
             username = username,
             password = password,

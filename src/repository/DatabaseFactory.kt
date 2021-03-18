@@ -17,6 +17,7 @@ object DatabaseFactory {
             SchemaUtils.create(Users)
             SchemaUtils.create(Officers)
             SchemaUtils.create(Managers)
+            SchemaUtils.create(Testers)
             SchemaUtils.create(TestCenters)
         }
     }

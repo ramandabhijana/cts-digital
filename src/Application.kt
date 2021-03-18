@@ -1,6 +1,7 @@
 package com.sestikom.ctsdigital
 
 import com.sestikom.ctsdigital.auth.*
+import com.sestikom.ctsdigital.model.*
 import com.sestikom.ctsdigital.model.session.*
 import com.sestikom.ctsdigital.repository.*
 import com.sestikom.ctsdigital.webapp.*
@@ -58,3 +59,7 @@ fun Application.module(testing: Boolean = false) {
     }
 }
 
+suspend fun getUserFromSession(session: CTSSession?, db: Repository): User? =
+        session?.let {
+            db.getUser(it.username)
+        }

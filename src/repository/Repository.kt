@@ -8,6 +8,5 @@ interface Repository {
     suspend fun getUser(username: String, hash: String? = null): User?
     suspend fun createManager(manager: TestCenterManager)
     suspend fun createCenter(center: TestCenter, managerUsername: String)
-    suspend fun createTester(tester: Tester)
-
+    suspend fun createTester(tester: Tester, managerUsername: String)
 }

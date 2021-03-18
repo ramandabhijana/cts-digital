@@ -4,13 +4,34 @@ import com.sestikom.ctsdigital.model.*
 import com.sestikom.ctsdigital.model.mapper.*
 import com.sestikom.ctsdigital.model.table.*
 import com.sestikom.ctsdigital.model.table.Officers.center
+import com.sestikom.ctsdigital.model.table.Officers.position
+import com.sestikom.ctsdigital.model.table.Officers.username
 import com.sestikom.ctsdigital.repository.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.*
 
 class CTSRepository: Repository {
-    override suspend fun getTestCenters(): List<TestCenter> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getTestCenters(): List<TestCenter> =
+        dbQuery {
+            Officers
+                    .innerJoin(Users, { username }, { username })
+                    .innerJoin(TestCenters, { center }, { TestCenters.id })
+                    .slice(
+                            Users.username,
+                            TestCenters.id,
+                            Users.fullName,
+                            TestCenters.name
+                    )
+                    .select { position eq OfficerPosition.MANAGER.ordinal }
+                    .map {
+                        val center = TestCenter(
+                                name = it[TestCenters.name],
+                                address = ""
+                        )
+                        center.id = it[TestCenters.id].value
+                        center.managerNames = arrayOf(it[Users.fullName])
+                        return@map center
+                    }
+        }
 
     override suspend fun getAllTests(): List<CovidTest> {
         TODO("Not yet implemented")
@@ -20,7 +41,18 @@ class CTSRepository: Repository {
         val user = dbQuery {
             Users
                     .select { (Users.username eq username) }
-                    .mapNotNull { toUser(it) }
+                    .mapNotNull mapNotNullParent@ { row ->
+                        if (row[Users.userCode] == UserCode.PATIENT.ordinal) {
+                            return@mapNotNullParent toUser(row)
+                        } else {
+                            Officers.slice(position)
+                                    .select { (Officers.username eq username) }
+                                    .mapNotNull {
+                                       toUser(row, it[position])
+                                    }
+                                    .singleOrNull()
+                        }
+                    }
                     .singleOrNull()
         }
         return when {
@@ -41,7 +73,7 @@ class CTSRepository: Repository {
             }
             Officers.insert {
                 it[username] = manager.username
-                it[position] = manager.position!!.ordinal
+                it[position] = null
                 it[center] = null
             }
             Managers.insert {
@@ -57,15 +89,38 @@ class CTSRepository: Repository {
                 it[name] = center.name
                 it[address] = center.address
             }
-            Officers.update({ Officers.username eq managerUsername }) {
+            Officers.update({ username eq managerUsername }) {
                 it[Officers.center] = centerId.value
+                it[position] = OfficerPosition.MANAGER.ordinal
             }
             Unit
         }
     }
 
-    override suspend fun createTester(tester: Tester) {
-        TODO("Not yet implemented")
+    override suspend fun createTester(tester: Tester, managerUsername: String) {
+        dbQuery {
+            val center = Officers
+                    .slice(center)
+                    .select { (username eq managerUsername) }
+                    .mapNotNull { it[center] }
+                    .singleOrNull()
+            Users.insert {
+                it[username] = tester.username
+                it[fullName] = "${tester.firstName} ${tester.lastName}"
+                it[passwordHash] = tester.password
+                it[userCode] = UserCode.TESTER.ordinal
+            }
+            Officers.insert {
+                it[username] = tester.username
+                it[position] = tester.position!!.ordinal
+                it[Officers.center] = center!!
+            }
+            Testers.insert {
+                it[username] = tester.username
+            }
+            Unit
+        }
+
     }
 
 

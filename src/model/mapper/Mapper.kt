@@ -5,7 +5,7 @@ import com.sestikom.ctsdigital.model.table.*
 import com.sestikom.ctsdigital.repository.*
 import org.jetbrains.exposed.sql.*
 
-fun CTSRepository.toUser(row: ResultRow): User? {
+fun CTSRepository.toUser(row: ResultRow, officerPosition: Int? = null): User? {
   return when(row[Users.userCode]) {
     UserCode.MANAGER.ordinal
     -> TestCenterManager(
@@ -13,7 +13,7 @@ fun CTSRepository.toUser(row: ResultRow): User? {
             password = row[Users.passwordHash],
             firstName = row[Users.fullName].substringBefore(" "),
             lastName = row[Users.fullName].substringAfterLast(" "),
-            position = OfficerPosition.MANAGER
+            position = OfficerPosition.valueFrom(officerPosition)
     )
     UserCode.TESTER.ordinal
     -> Tester(
@@ -21,7 +21,7 @@ fun CTSRepository.toUser(row: ResultRow): User? {
             password = row[Users.passwordHash],
             firstName = row[Users.fullName].substringBefore(" "),
             lastName = row[Users.fullName].substringAfterLast(" "),
-            position = OfficerPosition.TESTER
+            position = OfficerPosition.valueFrom(officerPosition)
     )
     UserCode.PATIENT.ordinal
     -> Patient(
@@ -34,3 +34,9 @@ fun CTSRepository.toUser(row: ResultRow): User? {
   }
 }
 
+fun CTSRepository.toCenter(row: ResultRow): TestCenter {
+  return TestCenter(
+          name = row[TestCenters.name],
+          address = row[TestCenters.address]
+  )
+}

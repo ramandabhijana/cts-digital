@@ -15,20 +15,14 @@ data class TestCenterManager(
           password: String,
           firstName: String,
           lastName: String
-  ): SignupResponse {
+  ): OfficerCreation {
+    val incorrectCredential = incorrectCredentials(username, password, firstName)
     return when {
-      password.length < MIN_PASSWORD_LENGTH
-      -> SignupResponse(null, "Password should be at least $MIN_PASSWORD_LENGTH characters long")
-      username.length < MIN_USER_ID_LENGTH
-      -> SignupResponse(null, "Username should be at least $MIN_USER_ID_LENGTH characters long")
-      !userNameValid(username)
-      -> SignupResponse(null, "Username should consist of digits, letters, dots or underscores")
-      firstName.isEmpty()
-      -> SignupResponse(null, "First name must not be empty")
+      incorrectCredential != null
+      -> incorrectCredential
       else
-      -> SignupResponse(
+      -> OfficerCreation(
               TestCenterManager(
-                      position = OfficerPosition.MANAGER,
                       username = username,
                       password = password,
                       firstName = firstName,
@@ -45,10 +39,52 @@ data class TestCenterManager(
     return TestCenter(name, address)
   }
 
+  fun recordTester(
+          username: String,
+          password: String,
+          firstName: String,
+          lastName: String
+  ): OfficerCreation {
+    val incorrectCredential = incorrectCredentials(username, password, firstName)
+    return when {
+      incorrectCredential != null
+      -> incorrectCredential
+      else
+      -> OfficerCreation(
+              Tester(
+                      position = OfficerPosition.TESTER,
+                      username = username,
+                      password = password,
+                      firstName = firstName,
+                      lastName = lastName
+              ),
+              null
+      )
+    }
+  }
+
+  private fun incorrectCredentials(
+          username: String,
+          password: String,
+          firstName: String
+  ): OfficerCreation? {
+    return when {
+      firstName.isEmpty()
+      -> OfficerCreation(null, "First name must not be empty")
+      !userNameValid(username)
+      -> OfficerCreation(null, "Username should consist of digits, letters, dots or underscores")
+      username.length < MIN_USER_ID_LENGTH
+      -> OfficerCreation(null, "Username should be at least $MIN_USER_ID_LENGTH characters long")
+      password.length < MIN_PASSWORD_LENGTH
+      -> OfficerCreation(null, "Password should be at least $MIN_PASSWORD_LENGTH characters long")
+      else -> null
+    }
+  }
+
 }
 
-data class SignupResponse(
-        val manager: TestCenterManager?,
+data class OfficerCreation(
+        val officer: CenterOfficer?,
         val errorMessage: String?,
 )
 

@@ -1,7 +1,16 @@
 package com.sestikom.ctsdigital.model
 
 enum class OfficerPosition {
-  MANAGER, TESTER
+  MANAGER, TESTER;
+  companion object {
+    fun valueFrom(number: Int?): OfficerPosition? {
+      return when(number) {
+        0 -> OfficerPosition.MANAGER
+        1 -> OfficerPosition.TESTER
+        else -> null
+      }
+    }
+  }
 }
 
 abstract class CenterOfficer: User() {

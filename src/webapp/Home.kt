@@ -16,6 +16,10 @@ class Home
 @KtorExperimentalLocationsAPI
 fun Route.home(db: Repository) {
   get<Home> {
-    call.respond(FreeMarkerContent("index.ftl", null))
+    val centers = db.getTestCenters()
+    call.respond(FreeMarkerContent(
+            "home.ftl",
+            mapOf("centers" to centers)
+    ))
   }
 }

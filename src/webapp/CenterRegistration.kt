@@ -26,11 +26,30 @@ fun Route.registerCenter(db: Repository, hashFunction: (String) -> String) {
   get<CenterRegistration> {
     val user = call.sessions.get<CTSSession>()?.let {
       db.getUser(it.username)
-    } ?: return@get call.respond(FreeMarkerContent("index.ftl", null))
-    if (user as? TestCenterManager != null)
-      call.respond(FreeMarkerContent("regcenterdummy.ftl", null))
-    else
-      call.respondText("Manager only")
+    } ?: return@get call.respond(FreeMarkerContent("logindummy.ftl", null))
+    when {
+      user as? TestCenterManager == null
+      -> call.respondText("Manager only")
+      user.position != null
+      -> call.respondText("Should go to manager's dashboard page")
+      else
+      -> {
+        val date = System.currentTimeMillis()
+        val code = call.securityCode(date, user, hashFunction)
+        call.respond(
+                FreeMarkerContent(
+                        "regcenter.ftl",
+                        mapOf(
+                                "user" to user,
+                                "date" to date,
+                                "code" to code,
+                                "error" to it.error
+                        ),
+                        user.username
+                )
+        )
+      }
+    }
   }
 
   post<CenterRegistration> {
@@ -38,17 +57,19 @@ fun Route.registerCenter(db: Repository, hashFunction: (String) -> String) {
       db.getUser(it.username)
     } as? TestCenterManager ?: return@post call.redirect(Login())
     val params = call.receiveParameters()
-    val centerName = "Denpasar Health Center"
-    val address = "Renon Boulevard"
-    user.registerCenter(centerName, address)?.let {
+    val name = params["centerName"] ?: return@post call.redirect(it)
+    val address = params["centerAddress"] ?: return@post call.redirect(it)
+    val date = params["date"]?.toLongOrNull() ?: return@post call.redirect(it)
+    val code = params["code"] ?: return@post call.redirect(it)
+//    if (!call.verifyCode(date, user, code, hashFunction))
+//      call.redirect(Login(error = "Couldn't verify security code"))
+    val regisError = CenterRegistration()
+    user.registerCenter(name, address)?.let {
       db.createCenter(it, user.username)
       call.respondText("New Test Center has been registered")
-    } ?: return@post call.respondText("Please fill in all fields")
-
-//    val date = params["date"]?.toLongOrNull() ?: return@post call.redirect(it)
-//    val code = params["code"] ?: return@post call.redirect(it)
-
-
+    } ?: return@post call.redirect(
+            regisError.copy(error = "Be sure all fields are filled in")
+    )
   }
 }
 
