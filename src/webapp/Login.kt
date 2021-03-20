@@ -1,5 +1,6 @@
 package com.sestikom.ctsdigital.webapp
 
+import com.sestikom.ctsdigital.*
 import com.sestikom.ctsdigital.model.TestCenterManager
 import com.sestikom.ctsdigital.model.session.CTSSession
 import com.sestikom.ctsdigital.repository.Repository
@@ -43,7 +44,12 @@ fun Route.login(db: Repository, hashFunction: (String) -> String) {
             val hash = hashFunction(password)
             db.getUser(username, hash)?.let {
                 call.sessions.set(CTSSession(username))
-                call.respondText("User logged in")
+                when(it) {
+                    is TestCenterManager
+                    -> call.redirect(RecordTester())
+                    else
+                    -> call.respondText("User logged in")
+                }
             } ?: run {
                 call.respondText("Username and Password do not match")
 //        call.redirect(loginError.copy(error = "Username and Password do not match"))
