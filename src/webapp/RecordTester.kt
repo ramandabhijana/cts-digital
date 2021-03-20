@@ -18,7 +18,9 @@ const val RECORD_TESTER = "/manager/recordtester"
 @KtorExperimentalLocationsAPI
 @Location(RECORD_TESTER)
 data class RecordTester(
-        val error: String = ""
+        val activeIndex: String = "1",
+        val error: String? = null,
+        val success: String? = null
 )
 
 @KtorExperimentalLocationsAPI
@@ -36,7 +38,12 @@ fun Route.recordTester(db: Repository, hashFunction: (String) -> String) {
       -> call.redirect(CenterRegistration())
       else
       -> call.respond(FreeMarkerContent(
-              "recordtesterdummy.ftl", mapOf("error" to it.error))
+              "recordtester.ftl",
+              mapOf(
+                      "success" to it.success,
+                      "activeIndex" to it.activeIndex,
+                      "error" to it.error
+              ))
       )
     }
   }
@@ -46,17 +53,17 @@ fun Route.recordTester(db: Repository, hashFunction: (String) -> String) {
     if (user == null) call.redirect(Login())
     else {
       val params = call.receive<Parameters>()
-      val username = "Aldowisnu"
-      val password = "Password123"
-      val firstName = "Aldo"
-      val lastName = "Wisnu"
+      val username = params["username"] ?: return@post call.redirect(it)
+      val password = params["password"] ?: return@post call.redirect(it)
+      val firstName = params["firstname"] ?: return@post call.redirect(it)
+      val lastName = params["lastname"] ?: return@post call.redirect(it)
       val manager = (user as TestCenterManager)
       val creation = manager.recordTester(
               username, password, firstName, lastName
       )
-      val recordError = RecordTester()
+      val record = RecordTester()
       creation.errorMessage?.let {
-        call.redirect(recordError.copy(error = it))
+        call.redirect(record.copy(error = it))
       } ?: run {
         val tester = creation.officer as Tester
         val hash = hashFunction(tester.password)
@@ -65,16 +72,15 @@ fun Route.recordTester(db: Repository, hashFunction: (String) -> String) {
         } catch (e: Throwable) {
           when {
             db.getUser(tester.username) != null ->
-              call.redirect(recordError.copy(error = "Username \'$username\' is already taken"))
+              return@post call.redirect(record.copy(error = "Username \'$username\' is already taken"))
             else -> {
               application.log.error("Failed to register user", e)
-              call.redirect(recordError.copy(error = "Failed to register user"))
+              return@post call.redirect(record.copy(error = "Failed to register user"))
             }
           }
         }
-        call.respondText("Tester Created")
+        call.redirect(record.copy(success = "Tester Created"))
       }
     }
-
   }
 }
