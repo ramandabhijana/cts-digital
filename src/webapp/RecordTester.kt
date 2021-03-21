@@ -30,7 +30,7 @@ fun Route.recordTester(db: Repository, hashFunction: (String) -> String) {
     when {
       user == null
       -> call.respond(FreeMarkerContent(
-              "signup.ftl", mapOf("error" to it.error))
+              "login.ftl", mapOf("error" to it.error))
       )
       user !is TestCenterManager
       -> call.respondText("No access")
@@ -42,7 +42,7 @@ fun Route.recordTester(db: Repository, hashFunction: (String) -> String) {
               mapOf(
                       "success" to it.success,
                       "activeIndex" to it.activeIndex,
-                      "error" to it.error
+                      "error" to it.error,
               ))
       )
     }

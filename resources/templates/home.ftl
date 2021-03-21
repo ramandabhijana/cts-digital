@@ -50,13 +50,6 @@
                             </p>
                         </div>
                 </#if>
-                <!-- Empty placeholder -->
-                <!-- <div class="media text-muted pt-3">
-                    <p class="media-body pb-3 mb-0 small lh-125 ">
-                        <strong class="d-block text-gray-dark">NO DATA AVAILABLE</strong>
-                    </p>
-                </div> -->
-
             </div>
 
             <div class="d-flex align-items-center p-3 my-3 text-black-50 rounded shadow-sm" style="background-color: #e3f2fd;">

@@ -45,10 +45,10 @@ class CTSRepository: Repository {
                         if (row[Users.userCode] == UserCode.PATIENT.ordinal) {
                             return@mapNotNullParent toUser(row)
                         } else {
-                            Officers.slice(position)
+                            Officers.slice(position, center)
                                     .select { (Officers.username eq username) }
                                     .mapNotNull {
-                                       toUser(row, it[position])
+                                       toUser(row, it[position], it[position])
                                     }
                                     .singleOrNull()
                         }
@@ -123,5 +123,29 @@ class CTSRepository: Repository {
 
     }
 
+    override suspend fun createTestKit(kit: TestKit, centerId: Int) {
+        dbQuery {
+            TestKits.insert {
+                it[name] = kit.name
+                it[stock] = kit.availableStock
+                it[TestKits.centerId] = centerId
+            }
+        }
+    }
+
+    override suspend fun getTestKits(centerId: Int): List<TestKit> =
+            dbQuery {
+                TestKits.selectAll()
+                        .mapNotNull { toKit(it) }
+            }
+
+    override suspend fun updateStock(kitId: Int, newStock: Int) {
+        dbQuery {
+            TestKits.update({ TestKits.id eq kitId }) {
+                it[stock] = newStock
+            }
+            Unit
+        }
+    }
 
 }

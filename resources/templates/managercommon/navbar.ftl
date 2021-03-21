@@ -7,4 +7,5 @@
     </button>
 
     <a class="btn text-danger" href="/logout">Log out</a>
+
 </nav>

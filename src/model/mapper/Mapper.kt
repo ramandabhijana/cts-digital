@@ -5,11 +5,19 @@ import com.sestikom.ctsdigital.model.table.*
 import com.sestikom.ctsdigital.repository.*
 import org.jetbrains.exposed.sql.*
 
-fun CTSRepository.toUser(row: ResultRow, officerPosition: Int? = null): User? {
+fun CTSRepository.toUser(row: ResultRow,
+                         officerPosition: Int? = null,
+                         centerId: Int? = null
+): User? {
+  val center = TestCenter()
+  if (centerId != null) {
+    center.id = centerId
+  }
   return when(row[Users.userCode]) {
     UserCode.MANAGER.ordinal
     -> TestCenterManager(
-            username = row[Users.username],
+            center = center,
+            username = row [Users.username],
             password = row[Users.passwordHash],
             firstName = row[Users.fullName].substringBefore(" "),
             lastName = row[Users.fullName].substringAfterLast(" "),
@@ -17,6 +25,7 @@ fun CTSRepository.toUser(row: ResultRow, officerPosition: Int? = null): User? {
     )
     UserCode.TESTER.ordinal
     -> Tester(
+            center = center,
             username = row[Users.username],
             password = row[Users.passwordHash],
             firstName = row[Users.fullName].substringBefore(" "),
@@ -33,6 +42,17 @@ fun CTSRepository.toUser(row: ResultRow, officerPosition: Int? = null): User? {
     else -> null
   }
 }
+
+fun CTSRepository.toKit(row: ResultRow): TestKit {
+  val kit = TestKit(
+          name = row[TestKits.name],
+          availableStock = row[TestKits.stock]
+  )
+  kit.id = row[TestKits.id].value
+  return kit
+}
+
+
 
 fun CTSRepository.toCenter(row: ResultRow): TestCenter {
   return TestCenter(

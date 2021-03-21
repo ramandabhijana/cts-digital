@@ -3,6 +3,7 @@ package com.sestikom.ctsdigital.model
 import com.sestikom.ctsdigital.auth.*
 
 data class TestCenterManager(
+        override val center: TestCenter? = null,
         override val position: OfficerPosition? = null,
         override val username: String = "",
         override val password: String = "",
@@ -61,6 +62,15 @@ data class TestCenterManager(
               null
       )
     }
+  }
+
+  fun createTestKit(name: String, receivedStock: Int): TestKit {
+    return TestKit(name, receivedStock)
+  }
+
+  fun createTestKit(kit: TestKit, stock: Int): TestKit {
+    val newStock = kit.availableStock + stock
+    return TestKit(kit.name, newStock)
   }
 
   private fun incorrectCredentials(

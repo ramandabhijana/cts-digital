@@ -57,6 +57,7 @@ fun Application.module(testing: Boolean = false) {
         signup(db, hashFunction)
         registerCenter(db, hashFunction)
         recordTester(db, hashFunction)
+        manageKit(db)
     }
 }
 

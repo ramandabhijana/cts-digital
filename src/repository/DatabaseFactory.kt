@@ -19,6 +19,7 @@ object DatabaseFactory {
             SchemaUtils.create(Managers)
             SchemaUtils.create(Testers)
             SchemaUtils.create(TestCenters)
+            SchemaUtils.create(TestKits)
         }
     }
 
