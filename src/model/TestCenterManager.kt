@@ -1,7 +1,5 @@
 package com.sestikom.ctsdigital.model
 
-import com.sestikom.ctsdigital.auth.*
-
 data class TestCenterManager(
         override val center: TestCenter? = null,
         override val position: OfficerPosition? = null,
@@ -16,13 +14,13 @@ data class TestCenterManager(
           password: String,
           firstName: String,
           lastName: String
-  ): OfficerCreation {
+  ): UserCreation {
     val incorrectCredential = incorrectCredentials(username, password, firstName)
     return when {
       incorrectCredential != null
       -> incorrectCredential
       else
-      -> OfficerCreation(
+      -> UserCreation(
               TestCenterManager(
                       username = username,
                       password = password,
@@ -45,13 +43,13 @@ data class TestCenterManager(
           password: String,
           firstName: String,
           lastName: String
-  ): OfficerCreation {
+  ): UserCreation {
     val incorrectCredential = incorrectCredentials(username, password, firstName)
     return when {
       incorrectCredential != null
       -> incorrectCredential
       else
-      -> OfficerCreation(
+      -> UserCreation(
               Tester(
                       position = OfficerPosition.TESTER,
                       username = username,
@@ -72,29 +70,5 @@ data class TestCenterManager(
     val newStock = kit.availableStock + stock
     return TestKit(kit.name, newStock)
   }
-
-  private fun incorrectCredentials(
-          username: String,
-          password: String,
-          firstName: String
-  ): OfficerCreation? {
-    return when {
-      firstName.isEmpty()
-      -> OfficerCreation(null, "First name must not be empty")
-      !userNameValid(username)
-      -> OfficerCreation(null, "Username should consist of digits, letters, dots or underscores")
-      username.length < MIN_USER_ID_LENGTH
-      -> OfficerCreation(null, "Username should be at least $MIN_USER_ID_LENGTH characters long")
-      password.length < MIN_PASSWORD_LENGTH
-      -> OfficerCreation(null, "Password should be at least $MIN_PASSWORD_LENGTH characters long")
-      else -> null
-    }
-  }
-
 }
-
-data class OfficerCreation(
-        val officer: CenterOfficer?,
-        val errorMessage: String?,
-)
 

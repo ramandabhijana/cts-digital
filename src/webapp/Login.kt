@@ -1,7 +1,7 @@
 package com.sestikom.ctsdigital.webapp
 
 import com.sestikom.ctsdigital.*
-import com.sestikom.ctsdigital.model.TestCenterManager
+import com.sestikom.ctsdigital.model.*
 import com.sestikom.ctsdigital.model.session.CTSSession
 import com.sestikom.ctsdigital.repository.Repository
 import io.ktor.application.*
@@ -30,7 +30,7 @@ fun Route.login(db: Repository, hashFunction: (String) -> String) {
     }
 
     post<Login> {
-        val username = "abhi180031251"
+        val username = "ramanda100"
         val password = "password123"
         val response = TestCenterManager().login(
             username = username,
@@ -47,6 +47,8 @@ fun Route.login(db: Repository, hashFunction: (String) -> String) {
                 when(it) {
                     is TestCenterManager
                     -> call.redirect(RecordTester())
+                    is Tester
+                    -> call.redirect(RecordTest())
                     else
                     -> call.respondText("User logged in")
                 }

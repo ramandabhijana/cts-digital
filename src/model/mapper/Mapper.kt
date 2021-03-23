@@ -4,6 +4,7 @@ import com.sestikom.ctsdigital.model.*
 import com.sestikom.ctsdigital.model.table.*
 import com.sestikom.ctsdigital.repository.*
 import org.jetbrains.exposed.sql.*
+import org.joda.time.LocalDate
 
 fun CTSRepository.toUser(row: ResultRow,
                          officerPosition: Int? = null,
@@ -35,13 +36,26 @@ fun CTSRepository.toUser(row: ResultRow,
     UserCode.PATIENT.ordinal
     -> Patient(
             username = row[Users.username],
-            password = row[Users.passwordHash],
-            firstName = row[Users.fullName].substringBefore(" "),
-            lastName = row[Users.fullName].substringAfterLast(" ")
     )
     else -> null
   }
 }
+
+fun CTSRepository.toPatient(
+        row: ResultRow,
+        dob: LocalDate,
+        type: Int,
+        symptoms: String
+): User = Patient(
+        username = row[Users.username],
+        password = row[Users.passwordHash],
+        firstName = row[Users.fullName].substringBefore(" "),
+        lastName = row[Users.fullName].substringAfterLast(" "),
+        birthDate = dob,
+        type = PatientType.valueFrom(type)!!,
+        symptoms = symptoms
+)
+
 
 fun CTSRepository.toKit(row: ResultRow): TestKit {
   val kit = TestKit(
@@ -51,8 +65,6 @@ fun CTSRepository.toKit(row: ResultRow): TestKit {
   kit.id = row[TestKits.id].value
   return kit
 }
-
-
 
 fun CTSRepository.toCenter(row: ResultRow): TestCenter {
   return TestCenter(

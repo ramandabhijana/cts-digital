@@ -58,6 +58,7 @@ fun Application.module(testing: Boolean = false) {
         registerCenter(db, hashFunction)
         recordTester(db, hashFunction)
         manageKit(db)
+        recordTest(db, hashFunction)
     }
 }
 

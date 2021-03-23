@@ -6,8 +6,13 @@ import com.sestikom.ctsdigital.model.table.*
 import com.sestikom.ctsdigital.model.table.Officers.center
 import com.sestikom.ctsdigital.model.table.Officers.position
 import com.sestikom.ctsdigital.model.table.Officers.username
+import com.sestikom.ctsdigital.model.table.Patients.dob
+import com.sestikom.ctsdigital.model.table.Patients.symptoms
+import com.sestikom.ctsdigital.model.table.Patients.type
+import com.sestikom.ctsdigital.model.table.TestKits.stock
 import com.sestikom.ctsdigital.repository.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.*
+import org.joda.time.*
 
 class CTSRepository: Repository {
     override suspend fun getTestCenters(): List<TestCenter> =
@@ -143,6 +148,103 @@ class CTSRepository: Repository {
         dbQuery {
             TestKits.update({ TestKits.id eq kitId }) {
                 it[stock] = newStock
+            }
+            Unit
+        }
+    }
+
+    override suspend fun getAllPatients(): List<Patient> =
+        dbQuery {
+            Users
+                    .innerJoin(Patients, { username }, { username })
+                    .select { Users.userCode eq UserCode.PATIENT.ordinal }
+                    .mapNotNull {
+                        toPatient(
+                                it,
+                                it[dob].toLocalDate(),
+                                it[type],
+                                it[symptoms]
+                        ) as Patient
+                    }
+        }
+
+    override suspend fun createTest(test: CovidTest,
+                                    patientUsername: String,
+                                    testerUsername: String,
+                                    kitId: Int
+    ) {
+        dbQuery {
+            val previousStock = TestKits
+                    .slice(stock)
+                    .select { (TestKits.id eq kitId) }
+                    .mapNotNull {
+                        it[stock]
+                    }
+                    .single()
+            TestKits.update({ TestKits.id eq kitId }) {
+                it[stock] = previousStock - 1
+            }
+            CovidTests.insert {
+                it[testDate] = test.testDate.toDateTime(LocalTime.now())
+                it[result] = test.result?.ordinal
+                it[resultDate] = null
+                it[status] = test.status.ordinal
+                it[patientId] = patientUsername
+                it[testerId] = testerUsername
+                it[CovidTests.kitId] = kitId
+            }
+            Unit
+        }
+    }
+
+    override suspend fun createPatient(patient: Patient) =
+        dbQuery {
+            Users.insert {
+                it[username] = patient.username
+                it[fullName] = "${patient.firstName} ${patient.lastName}"
+                it[passwordHash] = patient.password
+                it[userCode] = UserCode.PATIENT.ordinal
+            }
+            Patients.insert {
+                it[username] = patient.username
+                it[type] = patient.type.ordinal
+                it[symptoms] = patient.symptoms
+                it[dob] = patient.birthDate.toDateTime(LocalTime.now())
+            }
+            Unit
+        }
+
+    override suspend fun createTest(
+            test: CovidTest,
+            patientUsername: String,
+            patientType: Int,
+            symptoms: String,
+            testerUsername: String,
+            kitId: Int
+    ) {
+        dbQuery {
+            Patients.update({ Patients.username eq patientUsername }) {
+                it[type] = patientType
+                it[Patients.symptoms] = symptoms
+            }
+            val previousStock = TestKits
+                    .slice(stock)
+                    .select { (TestKits.id eq kitId) }
+                    .mapNotNull {
+                        it[stock]
+                    }
+                    .single()
+            TestKits.update({ TestKits.id eq kitId }) {
+                it[stock] = previousStock - 1
+            }
+            CovidTests.insert {
+                it[testDate] = test.testDate.toDateTime(LocalTime.now())
+                it[result] = test.result?.ordinal
+                it[resultDate] = null
+                it[status] = test.status.ordinal
+                it[patientId] = patientUsername
+                it[testerId] = testerUsername
+                it[CovidTests.kitId] = kitId
             }
             Unit
         }

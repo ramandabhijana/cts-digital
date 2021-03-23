@@ -20,6 +20,8 @@ object DatabaseFactory {
             SchemaUtils.create(Testers)
             SchemaUtils.create(TestCenters)
             SchemaUtils.create(TestKits)
+            SchemaUtils.create(Patients)
+            SchemaUtils.create(CovidTests)
         }
     }
 

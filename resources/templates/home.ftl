@@ -59,44 +59,44 @@
             </div>
             <div class="my-3 p-3 bg-white rounded shadow-sm">
                 <!-- Empty placeholder -->
+                <div class="media text-muted pt-3">
+                    <p class="media-body pb-3 mb-0 small lh-125 ">
+                        <strong class="d-block text-gray-dark">NO DATA AVAILABLE</strong>
+                    </p>
+                </div>
 <#--                <div class="media text-muted pt-3">-->
-<#--                    <p class="media-body pb-3 mb-0 small lh-125 ">-->
-<#--                        <strong class="d-block text-gray-dark">NO DATA AVAILABLE</strong>-->
-<#--                    </p>-->
+<#--                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">-->
+<#--                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">-->
+<#--                        <div class="d-flex justify-content-between align-items-center w-100">-->
+<#--                            <strong class="text-gray-dark">Full Name</strong>-->
+<#--                            <span class="badge badge-pill badge-success">Completed</span>-->
+<#--                        </div>-->
+<#--                        <span class="d-block">@username</span>-->
+<#--                        <span class="d-block pt-3">Tested on March 14, 2021</span>-->
+<#--                    </div>-->
 <#--                </div>-->
-                <div class="media text-muted pt-3">
-                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
-                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                            <strong class="text-gray-dark">Full Name</strong>
-                            <span class="badge badge-pill badge-success">Completed</span>
-                        </div>
-                        <span class="d-block">@username</span>
-                        <span class="d-block pt-3">Tested on March 14, 2021</span>
-                    </div>
-                </div>
 
-                <div class="media text-muted pt-3">
-                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
-                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                            <strong class="text-gray-dark">Full Name</strong>
-                            <span class="badge badge-pill badge-warning">Pending</span>
-                        </div>
-                        <span class="d-block">@username</span>
-                        <span class="d-block pt-3">Tested on March 14, 2021</span>
-                    </div>
-                </div>
-                <div class="media text-muted pt-3">
-                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
-                    <div class="media-body pb-3 mb-0 small lh-125 ">
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                            <strong class="text-gray-dark">Full Name</strong>
-                            <span class="badge badge-pill badge-warning">Pending</span>
-                        </div>
-                        <span class="d-block">@username</span>
-                    </div>
-                </div>
+<#--                <div class="media text-muted pt-3">-->
+<#--                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">-->
+<#--                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">-->
+<#--                        <div class="d-flex justify-content-between align-items-center w-100">-->
+<#--                            <strong class="text-gray-dark">Full Name</strong>-->
+<#--                            <span class="badge badge-pill badge-warning">Pending</span>-->
+<#--                        </div>-->
+<#--                        <span class="d-block">@username</span>-->
+<#--                        <span class="d-block pt-3">Tested on March 14, 2021</span>-->
+<#--                    </div>-->
+<#--                </div>-->
+<#--                <div class="media text-muted pt-3">-->
+<#--                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">-->
+<#--                    <div class="media-body pb-3 mb-0 small lh-125 ">-->
+<#--                        <div class="d-flex justify-content-between align-items-center w-100">-->
+<#--                            <strong class="text-gray-dark">Full Name</strong>-->
+<#--                            <span class="badge badge-pill badge-warning">Pending</span>-->
+<#--                        </div>-->
+<#--                        <span class="d-block">@username</span>-->
+<#--                    </div>-->
+<#--                </div>-->
 
             </div>
         </div>

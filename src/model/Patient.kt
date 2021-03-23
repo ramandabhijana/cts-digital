@@ -1,6 +1,6 @@
 package com.sestikom.ctsdigital.model
 
-import java.time.*
+import org.joda.time.LocalDate
 
 data class Patient(
         override val username: String = "",
@@ -25,9 +25,20 @@ data class Patient(
 }
 
 enum class PatientType {
-  RETURNEE,
-  QUARANTINED,
-  CLOSE_CONTACT,
-  INFECTED,
-  SUSPECTED
+  RETURNEE, QUARANTINED, CLOSE_CONTACT, INFECTED, SUSPECTED;
+
+  companion object {
+    fun valueFrom(number: Int): PatientType? {
+      return when(number) {
+        0 -> RETURNEE
+        1 -> QUARANTINED
+        2 -> CLOSE_CONTACT
+        3 -> INFECTED
+        4 -> SUSPECTED
+        else -> null
+      }
+    }
+  }
 }
+
+

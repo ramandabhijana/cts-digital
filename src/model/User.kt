@@ -30,4 +30,27 @@ abstract class User: Serializable, Principal {
         lastName: String,
         vararg extraField: Map<String, String>
     ): String?
+
+    protected fun incorrectCredentials(
+            username: String,
+            password: String,
+            firstName: String
+    ): UserCreation? {
+        return when {
+            firstName.isEmpty()
+            -> UserCreation(null, "First name must not be empty")
+            !userNameValid(username)
+            -> UserCreation(null, "Username should consist of digits, letters, dots or underscores")
+            username.length < MIN_USER_ID_LENGTH
+            -> UserCreation(null, "Username should be at least $MIN_USER_ID_LENGTH characters long")
+            password.length < MIN_PASSWORD_LENGTH
+            -> UserCreation(null, "Password should be at least $MIN_PASSWORD_LENGTH characters long")
+            else -> null
+        }
+    }
 }
+
+data class UserCreation(
+        val user: User?,
+        val errorMessage: String?,
+)

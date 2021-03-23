@@ -12,4 +12,16 @@ interface Repository {
     suspend fun createTestKit(kit: TestKit, centerId: Int)
     suspend fun getTestKits(centerId: Int): List<TestKit>
     suspend fun updateStock(kitId: Int, newStock: Int)
+    suspend fun getAllPatients(): List<Patient>
+    suspend fun createTest(test: CovidTest,
+                           patientUsername: String,
+                           testerUsername: String,
+                           kitId: Int)
+    suspend fun createTest(test: CovidTest,
+                           patientUsername: String,
+                           patientType: Int,
+                           symptoms: String,
+                           testerUsername: String,
+                           kitId: Int)
+    suspend fun createPatient(patient: Patient)
 }

@@ -62,7 +62,7 @@ fun Route.signup(db: Repository, hashFunction: (String) -> String) {
     response.errorMessage?.let {
       call.redirect(signupError.copy(error = it))
     } ?: run {
-      val manager = response.officer as TestCenterManager
+      val manager = response.user as TestCenterManager
       val hash = hashFunction(manager.password)
       try {
         db.createManager(manager.copy(password = hash))

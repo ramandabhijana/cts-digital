@@ -65,7 +65,7 @@ fun Route.recordTester(db: Repository, hashFunction: (String) -> String) {
       creation.errorMessage?.let {
         call.redirect(record.copy(error = it))
       } ?: run {
-        val tester = creation.officer as Tester
+        val tester = creation.user as Tester
         val hash = hashFunction(tester.password)
         try {
           db.createTester(tester.copy(password = hash), manager.username)

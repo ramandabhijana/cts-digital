@@ -1,12 +1,12 @@
 package com.sestikom.ctsdigital.model
 
-import java.time.*
+import org.joda.time.LocalDate
 
 data class CovidTest(
-        val id: String,
+        val id: Int? = null,
         val testDate: LocalDate,
-        val result: TestResult,
-        val resultDate: LocalDate,
+        val result: TestResult? = null,
+        val resultDate: LocalDate? = null,
         val status: TestStatus,
         val patientName: String = ""
 )
