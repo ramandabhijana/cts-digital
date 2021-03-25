@@ -6,10 +6,13 @@ import com.sestikom.ctsdigital.model.session.CTSSession
 import com.sestikom.ctsdigital.repository.Repository
 import io.ktor.application.*
 import io.ktor.freemarker.*
+import io.ktor.http.*
 import io.ktor.locations.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
+import java.lang.IllegalArgumentException
 
 const val LOGIN = "/login"
 
@@ -19,42 +22,41 @@ data class Login(val username: String = "", val error: String = "")
 
 @KtorExperimentalLocationsAPI
 fun Route.login(db: Repository, hashFunction: (String) -> String) {
+
     get<Login> {
         val user = call.sessions.get<CTSSession>()?.let {
             db.getUser(it.username)
         }
         if (user != null)
-            call.respondText("User still in session")
+            call.redirectUser(user)
         else
-            call.respond(FreeMarkerContent("logindummy.ftl", null))
+            call.respond(FreeMarkerContent(
+                "login.ftl",
+                mapOf(
+                    "userId" to it.username,
+                    "error" to it.error
+                )
+            ))
     }
 
     post<Login> {
-        val username = "ramanda100"
-        val password = "password123"
+        val params = call.receive<Parameters>()
+        val username = params["username"] ?: throw IllegalArgumentException("Missing argument username")
+        val password = params["password"] ?: throw IllegalArgumentException("Missing argument password")
         val response = TestCenterManager().login(
             username = username,
             password = password,
         )
         val loginError = Login(username)
         response?.let {
-            call.respondText(it)
-//      call.redirect(loginError.copy(error = it))
+            call.redirect(loginError.copy(error = it))
         } ?: run {
             val hash = hashFunction(password)
             db.getUser(username, hash)?.let {
                 call.sessions.set(CTSSession(username))
-                when(it) {
-                    is TestCenterManager
-                    -> call.redirect(RecordTester())
-                    is Tester
-                    -> call.redirect(RecordTest())
-                    else
-                    -> call.respondText("User logged in")
-                }
+                call.redirectUser(it)
             } ?: run {
-                call.respondText("Username and Password do not match")
-//        call.redirect(loginError.copy(error = "Username and Password do not match"))
+                call.redirect(loginError.copy(error = "Username and Password do not match"))
             }
         }
     }
