@@ -7,8 +7,13 @@ data class CovidTest(
         val testDate: LocalDate,
         val result: TestResult? = null,
         val resultDate: LocalDate? = null,
-        val status: TestStatus,
-        val patientName: String = ""
+        val status: TestStatus = TestStatus.PENDING,
+        val patientUsername: String = "",
+        val testerUsername: String = "",
+        val kitId: Int = Int.MIN_VALUE,
+        val patientName: String = "",
+        val testerName: String = "",
+        val kitName: String = "",
 )
 
 enum class TestResult {

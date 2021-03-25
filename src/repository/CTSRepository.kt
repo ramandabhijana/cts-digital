@@ -3,6 +3,9 @@ package com.sestikom.ctsdigital.repository
 import com.sestikom.ctsdigital.model.*
 import com.sestikom.ctsdigital.model.mapper.*
 import com.sestikom.ctsdigital.model.table.*
+import com.sestikom.ctsdigital.model.table.CovidTests.kitId
+import com.sestikom.ctsdigital.model.table.CovidTests.patientId
+import com.sestikom.ctsdigital.model.table.CovidTests.testerId
 import com.sestikom.ctsdigital.model.table.Officers.center
 import com.sestikom.ctsdigital.model.table.Officers.position
 import com.sestikom.ctsdigital.model.table.Officers.username
@@ -247,6 +250,42 @@ class CTSRepository: Repository {
                 it[CovidTests.kitId] = kitId
             }
             Unit
+        }
+    }
+
+    override suspend fun getPendingTests(testerUsername: String): List<CovidTest> {
+        return dbQuery {
+            CovidTests
+                    .innerJoin(TestKits, { kitId }, { id })
+                    .innerJoin(Users, { patientId }, { username } )
+                    .select { (CovidTests.status eq TestStatus.PENDING.ordinal) and
+                              (testerId eq testerUsername)
+                    }
+                    .map {
+                        CovidTest(
+                                id = it[CovidTests.id].value,
+                                testDate = it[CovidTests.testDate].toLocalDate(),
+                                patientUsername = it[patientId],
+                                testerUsername = it[testerId],
+                                kitId = it[kitId],
+                                patientName = it[Users.fullName],
+                                kitName = it[TestKits.name]
+                        )
+                    }
+        }
+    }
+
+    override suspend fun updateTestResult(
+            result: Int,
+            resultDate: DateTime,
+            testId: Int
+    ) {
+        dbQuery {
+            CovidTests.update({ CovidTests.id eq testId }) {
+                it[CovidTests.result] = result
+                it[CovidTests.resultDate] = resultDate
+                it[status] = TestStatus.COMPLETE.ordinal
+            }
         }
     }
 

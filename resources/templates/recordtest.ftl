@@ -47,7 +47,6 @@
 
             <#if success??>
                 <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-<#--                    <h5 class="alert-heading">${success}</h5>-->
                     <strong>${success}</strong>
                     <#if testDetail??> <p>${testDetail}</p> </#if>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -144,7 +143,7 @@
                                 <div class="mb-3">
                                     <label for="kitid">Test Kit ID</label>
                                     <div class="input-group">
-                                        <select class="form-control" name="selectedTestKitId">
+                                        <select class="form-control custom-select" name="selectedTestKitId">
                                             <#if kits?? && (kits?size > 0)>
                                                 <#list kits?filter(k -> k.availableStock > 0) as kit>
                                                     <option value="${kit.id}">${kit.id} (${kit.name})</option>

@@ -11,6 +11,7 @@ import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.gson.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -51,6 +52,9 @@ fun Application.module(testing: Boolean = false) {
     val db = CTSRepository()
 
     routing {
+        static("/static") {
+            resources("images")
+        }
         home(db)
         logout()
         login(db,hashFunction)
@@ -59,6 +63,7 @@ fun Application.module(testing: Boolean = false) {
         recordTester(db, hashFunction)
         manageKit(db)
         recordTest(db, hashFunction)
+        updateTestResult(db)
     }
 }
 

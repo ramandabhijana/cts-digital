@@ -1,6 +1,7 @@
 package com.sestikom.ctsdigital.repository
 
 import com.sestikom.ctsdigital.model.*
+import org.joda.time.*
 
 interface Repository {
     suspend fun getTestCenters(): List<TestCenter>
@@ -24,4 +25,6 @@ interface Repository {
                            testerUsername: String,
                            kitId: Int)
     suspend fun createPatient(patient: Patient)
+    suspend fun getPendingTests(testerUsername: String): List<CovidTest>?
+    suspend fun updateTestResult(result: Int, resultDate: DateTime, testId: Int)
 }
