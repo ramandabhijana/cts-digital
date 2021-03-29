@@ -8,7 +8,11 @@ abstract class CenterOfficer: User() {
     TODO("Not yet implemented")
   }
 
-  override fun updateProfile(firstName: String, lastName: String, vararg extraField: Map<String, String>): String? {
+  override fun updateProfile(
+          firstName: String?,
+          lastName: String?,
+          extraField: Map<String, String>?
+  ): User {
     TODO("Not yet implemented")
   }
 }

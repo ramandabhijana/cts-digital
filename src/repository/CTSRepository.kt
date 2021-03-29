@@ -49,14 +49,24 @@ class CTSRepository: Repository {
         val user = dbQuery {
             Users
                     .select { (Users.username eq username) }
-                    .mapNotNull mapNotNullParent@ { row ->
+                    .mapNotNull { row ->
                         if (row[Users.userCode] == UserCode.PATIENT.ordinal) {
-                            return@mapNotNullParent toUser(row)
+                            Patients.slice(dob, type, symptoms)
+                                    .select { (Patients.username eq username) }
+                                    .mapNotNull {
+                                        toPatient(
+                                                row,
+                                                it[dob].toLocalDate(),
+                                                it[type],
+                                                it[symptoms]
+                                        )
+                                    }
+                                    .singleOrNull()
                         } else {
                             Officers.slice(position, center)
                                     .select { (Officers.username eq username) }
                                     .mapNotNull {
-                                       toUser(row, it[position], it[position])
+                                       toOfficer(row, it[position], it[position])
                                     }
                                     .singleOrNull()
                         }
@@ -289,4 +299,31 @@ class CTSRepository: Repository {
         }
     }
 
+    override suspend fun updatePatientProfile(
+            username: String,
+            firstName: String?,
+            lastName: String?,
+            dob: LocalDate?,
+            password: String?
+    ) {
+        dbQuery {
+            if (password != null)
+                Users.update({Users.username eq username}) {
+                    it[passwordHash] = password
+                }
+            if (dob != null)
+                Patients.update({ Patients.username eq username }) {
+                    it[Patients.dob] = dob.toDateTime(LocalTime.now())
+                }
+            val previousName = Users
+                    .slice(Users.fullName)
+                    .select { Users.username eq username }
+                    .map { it[Users.fullName] }
+                    .single()
+            if (previousName != "$firstName $lastName")
+                Users.update({ Users.username eq username }) {
+                    it[fullName] = "$firstName $lastName"
+                }
+        }
+    }
 }

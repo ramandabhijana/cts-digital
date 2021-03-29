@@ -1,13 +1,15 @@
 package com.sestikom.ctsdigital.model
 
 import org.joda.time.LocalDate
+import org.joda.time.format.*
+import java.time.format.DateTimeFormatter.*
 
 data class Patient(
         override val username: String = "",
-        override val password: String = "",
-        override val firstName: String = "",
-        override val lastName: String = "",
-        val birthDate: LocalDate = LocalDate.now(),
+        override var password: String = "",
+        override var firstName: String = "",
+        override var lastName: String = "",
+        var birthDate: LocalDate = LocalDate.now(),
         val type: PatientType = PatientType.SUSPECTED,
         val symptoms: String = ""
 ): User() {
@@ -15,12 +17,30 @@ data class Patient(
     TODO("Not yet implemented")
   }
 
+  val dobString: String
+  get() {
+    val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+    return birthDate.toString(formatter)
+  }
+
+  val typeString: String
+  get() = type.stringValue
+
   override fun updateProfile(
-          firstName: String,
-          lastName: String,
-          vararg extraField: Map<String, String>
-  ): String? {
-    TODO("Not yet implemented")
+          firstName: String?,
+          lastName: String?,
+          extraField: Map<String, String>?
+  ): User {
+    firstName?.let { this.firstName = it }
+    lastName?.let { this.lastName = it }
+    extraField?.let {
+      it["dob"]?.let { dob ->
+        val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+        this.birthDate = LocalDate.parse(dob, formatter)
+      }
+      it["password"]?.let { this.password = it }
+    }
+    return this
   }
 }
 
@@ -37,6 +57,17 @@ enum class PatientType {
         4 -> SUSPECTED
         else -> null
       }
+    }
+  }
+
+  val stringValue: String
+  get() {
+    return when(this) {
+      RETURNEE -> "Returnee"
+      QUARANTINED -> "Quaratined"
+      CLOSE_CONTACT -> "Close Contact"
+      INFECTED -> "Infected"
+      SUSPECTED -> "Suspected"
     }
   }
 }

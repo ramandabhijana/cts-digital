@@ -27,4 +27,11 @@ interface Repository {
     suspend fun createPatient(patient: Patient)
     suspend fun getPendingTests(testerUsername: String): List<CovidTest>?
     suspend fun updateTestResult(result: Int, resultDate: DateTime, testId: Int)
+    suspend fun updatePatientProfile(
+            username: String,
+            firstName: String? = null,
+            lastName: String? = null,
+            dob: LocalDate? = null,
+            password: String? = null
+    )
 }

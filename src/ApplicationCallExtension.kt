@@ -35,5 +35,7 @@ suspend fun ApplicationCall.redirectUser(user: User) {
     -> redirect(RecordTest())
     is TestCenterManager
     -> redirect(RecordTester())
+    is Patient
+    -> redirect(PatientDashboard())
   }
 }

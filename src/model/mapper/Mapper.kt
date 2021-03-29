@@ -6,9 +6,9 @@ import com.sestikom.ctsdigital.repository.*
 import org.jetbrains.exposed.sql.*
 import org.joda.time.LocalDate
 
-fun CTSRepository.toUser(row: ResultRow,
-                         officerPosition: Int? = null,
-                         centerId: Int? = null
+fun CTSRepository.toOfficer(row: ResultRow,
+                            officerPosition: Int? = null,
+                            centerId: Int? = null
 ): User? {
   val center = TestCenter()
   if (centerId != null) {
@@ -32,10 +32,6 @@ fun CTSRepository.toUser(row: ResultRow,
             firstName = row[Users.fullName].substringBefore(" "),
             lastName = row[Users.fullName].substringAfterLast(" "),
             position = OfficerPosition.valueFrom(officerPosition)
-    )
-    UserCode.PATIENT.ordinal
-    -> Patient(
-            username = row[Users.username],
     )
     else -> null
   }

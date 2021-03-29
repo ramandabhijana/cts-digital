@@ -64,6 +64,8 @@ fun Application.module(testing: Boolean = false) {
         manageKit(db)
         recordTest(db, hashFunction)
         updateTestResult(db)
+        patientDashboard(db)
+        updateProfile(db, hashFunction)
     }
 }
 

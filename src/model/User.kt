@@ -26,10 +26,10 @@ abstract class User: Serializable, Principal {
     }
 
     abstract fun updateProfile(
-        firstName: String,
-        lastName: String,
-        vararg extraField: Map<String, String>
-    ): String?
+        firstName: String? = null,
+        lastName: String? = null,
+        extraField: Map<String, String>? = null
+    ): User
 
     protected fun incorrectCredentials(
             username: String,
