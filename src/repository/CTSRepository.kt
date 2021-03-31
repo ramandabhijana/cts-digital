@@ -63,10 +63,16 @@ class CTSRepository: Repository {
                                     }
                                     .singleOrNull()
                         } else {
-                            Officers.slice(position, center)
+                            Officers.innerJoin(TestCenters, { center }, { id } )
                                     .select { (Officers.username eq username) }
                                     .mapNotNull {
-                                       toOfficer(row, it[position], it[position])
+                                       toOfficer(
+                                               row,
+                                               it[position],
+                                               it[center],
+                                               it[TestCenters.name],
+                                               it[TestCenters.address]
+                                       )
                                     }
                                     .singleOrNull()
                         }
@@ -326,4 +332,29 @@ class CTSRepository: Repository {
                 }
         }
     }
+
+    override suspend fun getTestsHistoryByCenterId(centerId: Int): List<CovidTest> =
+        dbQuery {
+            CovidTests
+                    .innerJoin(TestKits, { kitId }, { TestKits.id })
+                    .innerJoin(Users, { patientId }, { username } )
+                    .innerJoin(Patients, { patientId }, { username })
+                    .innerJoin(Officers, { testerId }, { username })
+                    .select { (center eq centerId) }
+                    .map {
+                        CovidTest(
+                                id = it[CovidTests.id].value,
+                                testDate = it[CovidTests.testDate].toLocalDate(),
+                                result = TestResult.valueFrom(it[CovidTests.result]),
+                                resultDate = it[CovidTests.resultDate]?.toLocalDate(),
+                                status = TestStatus.valueFrom(it[CovidTests.status]),
+                                patientUsername = it[patientId],
+                                testerUsername = it[testerId],
+                                kitId = it[kitId],
+                                patientName = it[Users.fullName],
+                                patientType = PatientType.valueFrom(it[type])!!.stringValue,
+                                kitName = it[TestKits.name]
+                        )
+                    }
+        }
 }

@@ -34,4 +34,5 @@ interface Repository {
             dob: LocalDate? = null,
             password: String? = null
     )
+    suspend fun getTestsHistoryByCenterId(centerId: Int): List<CovidTest>
 }

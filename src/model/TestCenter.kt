@@ -1,6 +1,6 @@
 package com.sestikom.ctsdigital.model
 
-data class TestCenter(val name: String = "", val address: String = "") {
+data class TestCenter(var name: String = "", var address: String = "") {
   var id: Int? = null
   var managerNames: Array<String> = arrayOf()
 

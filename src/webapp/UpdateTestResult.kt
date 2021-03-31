@@ -33,11 +33,10 @@ data class UpdateTestResult(
 fun Route.updateTestResult(db: Repository) {
   get<UpdateTestResult> {
     val user = getUserFromSession(call.sessions.get<CTSSession>(), db)
-    when {
-      user == null
+    when (user) {
+      null
       -> call.redirect(Login())
-      user !is Tester
-      -> call.respondText("No access")
+      !is Tester -> call.respondText("No access")
       else -> {
         val pendingTests = db.getPendingTests(user.username)
         if (pendingTests.isNullOrEmpty())

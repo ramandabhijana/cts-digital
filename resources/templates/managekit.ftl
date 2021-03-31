@@ -95,7 +95,7 @@
                                 <div class="mb-3">
                                     <label for="kitid">Test Kit ID</label>
                                     <div class="input-group">
-                                        <select class="form-control" name="selectedtestkitid">
+                                        <select class="form-control custom-select" name="selectedtestkitid">
                                             <#if kits?? && (kits?size > 0)>
                                                 <#list kits as kit>
                                                     <option value="${kit.id}">${kit.id} (${kit.name})</option>

@@ -8,11 +8,15 @@ import org.joda.time.LocalDate
 
 fun CTSRepository.toOfficer(row: ResultRow,
                             officerPosition: Int? = null,
-                            centerId: Int? = null
+                            centerId: Int? = null,
+                            centerName: String? = null,
+                            centerAddress: String? = null
 ): User? {
   val center = TestCenter()
-  if (centerId != null) {
+  if (centerId != null && centerName != null && centerAddress != null) {
     center.id = centerId
+    center.name = centerName
+    center.address = centerAddress
   }
   return when(row[Users.userCode]) {
     UserCode.MANAGER.ordinal
