@@ -8,8 +8,6 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
-    <title>Hello, world!</title>
 </head>
 
 <body class="bg-light">
@@ -30,8 +28,6 @@
                         <#if error??>
                             <p class="text-danger">${error}</p>
                         </#if>
-                        <input type="hidden" name="date" value="${date?c}">
-                        <input type="hidden" name="code" value="${code}">
                         <div class="form-group">
                             <label for="centerName">Name</label>
                             <input type="text" name="centerName" class="form-control" id="centerName" placeholder="Enter name of your test center">

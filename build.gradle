@@ -28,6 +28,10 @@ repositories {
     maven { url 'https://kotlin.bintray.com/ktor' }
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
@@ -39,6 +43,8 @@ dependencies {
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("org.jetbrains.exposed:exposed:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
+    testImplementation "io.mockk:mockk:1.10.4"
     implementation("org.postgresql:postgresql:$postgres_version")
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+    testImplementation 'io.kotest:kotest-runner-junit5:4.4.3'
 }

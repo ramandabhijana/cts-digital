@@ -12,7 +12,7 @@
                     <span class="badge badge-secondary badge-pill">${kits?size}</span>
                 </#if>
             </h6>
-            <ul class="list-group mb-3">
+            <ul id="test-kits" class="list-group mb-3">
                 <#if kits?? && (kits?size > 0)>
                     <#list kits as kit>
                         <li class="list-group-item d-flex justify-content-between lh-condensed">
@@ -70,11 +70,11 @@
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="newkit" role="tabpanel" aria-labelledby="new-kit-tab">
                         <div class="card-body">
-                            <form action="/manager/managekit" method="post">
+                            <form id="new-kit-form" action="/manager/managekit" method="post">
                                 <div class="mb-3">
                                     <label for="username">Name</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="name" id="name" placeholder="Enter the name of test kit" required>
+                                        <input type="text" class="form-control" name="kitName" id="kitName" placeholder="Enter the name of test kit" required>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -83,14 +83,16 @@
                                         <input type="text" class="form-control" id="stock" name="stock" placeholder="Enter the stock of test kit" required>
                                     </div>
                                 </div>
-                                <button class="btn btn-success btn-lg mt-5" type="submit">Submit</button>
+                                <button class="btn btn-success btn-lg mt-5"
+                                        type="submit"
+                                >Submit</button>
                             </form>
                         </div>
                     </div>
 
                     <div class="tab-pane fade" id="newstock" role="tabpanel" aria-labelledby="new-stock-tab">
                         <div class="card-body">
-                            <form action="/manager/managekit" method="post">
+                            <form id="new-stock-form" action="/manager/managekit" method="post">
 
                                 <div class="mb-3">
                                     <label for="kitid">Test Kit ID</label>

@@ -64,20 +64,13 @@ fun Route.signup(db: Repository, hashFunction: (String) -> String) {
     } ?: run {
       val manager = response.user as TestCenterManager
       val hash = hashFunction(manager.password)
-      try {
-        db.createManager(manager.copy(password = hash))
-      } catch (e: Throwable) {
-        when {
-          db.getUser(manager.username) != null ->
-           call.redirect(signupError.copy(error = "Username \'$username\' is already taken"))
-          else -> {
-            application.log.error("Failed to register user", e)
-            call.redirect(signupError.copy(error = "Failed to register user"))
-          }
-        }
+      val insertIsSuccess = db.createManager(manager.copy(password = hash))
+      if (insertIsSuccess) {
+        call.sessions.set(CTSSession(manager.username))
+        call.redirect(CenterRegistration())
+      } else {
+        return@post call.redirect(signupError.copy(error = "Username \'$username\' is already taken"))
       }
-      call.sessions.set(CTSSession(manager.username))
-      call.redirect(CenterRegistration())
     }
   }
 }

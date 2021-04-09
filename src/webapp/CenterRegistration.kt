@@ -17,34 +17,23 @@ const val REGISTRATION = "/manager/regcenter"
 
 @KtorExperimentalLocationsAPI
 @Location(REGISTRATION)
-data class CenterRegistration(
-        val error: String = ""
-)
+data class CenterRegistration(val error: String = "")
 
 @KtorExperimentalLocationsAPI
 fun Route.registerCenter(db: Repository, hashFunction: (String) -> String) {
   get<CenterRegistration> {
-    val user = call.sessions.get<CTSSession>()?.let {
-      db.getUser(it.username)
-    } ?: return@get call.respond(FreeMarkerContent("logindummy.ftl", null))
+    val user = getUserFromSession(call.sessions.get<CTSSession>(), db)
     when {
       user as? TestCenterManager == null
       -> call.respondText("Manager only")
       user.position != null
-      -> call.respondText("Should go to manager's dashboard page")
+      -> call.redirect(RecordTester())
       else
       -> {
-        val date = System.currentTimeMillis()
-        val code = call.securityCode(date, user, hashFunction)
         call.respond(
                 FreeMarkerContent(
                         "regcenter.ftl",
-                        mapOf(
-                                "user" to user,
-                                "date" to date,
-                                "code" to code,
-                                "error" to it.error
-                        ),
+                        mapOf("error" to it.error),
                         user.username
                 )
         )
@@ -59,14 +48,10 @@ fun Route.registerCenter(db: Repository, hashFunction: (String) -> String) {
     val params = call.receiveParameters()
     val name = params["centerName"] ?: return@post call.redirect(it)
     val address = params["centerAddress"] ?: return@post call.redirect(it)
-    val date = params["date"]?.toLongOrNull() ?: return@post call.redirect(it)
-    val code = params["code"] ?: return@post call.redirect(it)
-//    if (!call.verifyCode(date, user, code, hashFunction))
-//      call.redirect(Login(error = "Couldn't verify security code"))
     val regisError = CenterRegistration()
     user.registerCenter(name, address)?.let {
       db.createCenter(it, user.username)
-      call.respondText("New Test Center has been registered")
+      call.redirect(RecordTester())
     } ?: return@post call.redirect(
             regisError.copy(error = "Be sure all fields are filled in")
     )

@@ -15,6 +15,7 @@ import io.ktor.sessions.*
 import java.lang.IllegalArgumentException
 
 const val LOGIN = "/login"
+const val SESSION_TIMED_OUT = "Session has timed out. Please Login again"
 
 @KtorExperimentalLocationsAPI
 @Location(LOGIN)
@@ -22,7 +23,6 @@ data class Login(val username: String = "", val error: String = "")
 
 @KtorExperimentalLocationsAPI
 fun Route.login(db: Repository, hashFunction: (String) -> String) {
-
     get<Login> {
         val user = call.sessions.get<CTSSession>()?.let {
             db.getUser(it.username)

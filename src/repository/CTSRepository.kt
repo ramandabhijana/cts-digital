@@ -5,6 +5,7 @@ import com.sestikom.ctsdigital.model.mapper.*
 import com.sestikom.ctsdigital.model.table.*
 import com.sestikom.ctsdigital.model.table.CovidTests.kitId
 import com.sestikom.ctsdigital.model.table.CovidTests.patientId
+import com.sestikom.ctsdigital.model.table.CovidTests.status
 import com.sestikom.ctsdigital.model.table.CovidTests.testerId
 import com.sestikom.ctsdigital.model.table.Officers.center
 import com.sestikom.ctsdigital.model.table.Officers.position
@@ -41,9 +42,22 @@ class CTSRepository: Repository {
                     }
         }
 
-    override suspend fun getAllTests(): List<CovidTest> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getAllTests(): List<CovidTest> =
+        dbQuery {
+            CovidTests
+                    .innerJoin(Users, { patientId }, { username } )
+                    .selectAll()
+                    .map {
+                        CovidTest(
+                                id = it[CovidTests.id].value,
+                                testDate = it[CovidTests.testDate].toLocalDate(),
+                                patientUsername = it[patientId],
+                                patientName = it[Users.fullName],
+                                status = TestStatus.valueFrom(it[status]),
+                        )
+                    }
+        }
+
 
     override suspend fun getUser(username: String, hash: String?): User? {
         val user = dbQuery {
@@ -63,7 +77,8 @@ class CTSRepository: Repository {
                                     }
                                     .singleOrNull()
                         } else {
-                            Officers.innerJoin(TestCenters, { center }, { id } )
+                            Officers
+                                    .leftJoin(TestCenters, { center }, { id })
                                     .select { (Officers.username eq username) }
                                     .mapNotNull {
                                        toOfficer(
@@ -87,7 +102,8 @@ class CTSRepository: Repository {
         }
     }
 
-    override suspend fun createManager(manager: TestCenterManager) {
+    override suspend fun createManager(manager: TestCenterManager): Boolean {
+        if (getUser(manager.username) != null) return false
         dbQuery {
             Users.insert {
                 it[username] = manager.username
@@ -100,11 +116,8 @@ class CTSRepository: Repository {
                 it[position] = null
                 it[center] = null
             }
-            Managers.insert {
-                it[username] = manager.username
-            }
-            Unit
         }
+        return true
     }
 
     override suspend fun createCenter(center: TestCenter, managerUsername: String) {
@@ -139,9 +152,6 @@ class CTSRepository: Repository {
                 it[position] = tester.position!!.ordinal
                 it[Officers.center] = center!!
             }
-            Testers.insert {
-                it[username] = tester.username
-            }
             Unit
         }
 
@@ -159,7 +169,7 @@ class CTSRepository: Repository {
 
     override suspend fun getTestKits(centerId: Int): List<TestKit> =
             dbQuery {
-                TestKits.selectAll()
+                TestKits.select { TestKits.centerId eq centerId }
                         .mapNotNull { toKit(it) }
             }
 
@@ -274,7 +284,7 @@ class CTSRepository: Repository {
             CovidTests
                     .innerJoin(TestKits, { kitId }, { id })
                     .innerJoin(Users, { patientId }, { username } )
-                    .select { (CovidTests.status eq TestStatus.PENDING.ordinal) and
+                    .select { (status eq TestStatus.PENDING.ordinal) and
                               (testerId eq testerUsername)
                     }
                     .map {
@@ -347,7 +357,7 @@ class CTSRepository: Repository {
                                 testDate = it[CovidTests.testDate].toLocalDate(),
                                 result = TestResult.valueFrom(it[CovidTests.result]),
                                 resultDate = it[CovidTests.resultDate]?.toLocalDate(),
-                                status = TestStatus.valueFrom(it[CovidTests.status]),
+                                status = TestStatus.valueFrom(it[status]),
                                 patientUsername = it[patientId],
                                 testerUsername = it[testerId],
                                 kitId = it[kitId],

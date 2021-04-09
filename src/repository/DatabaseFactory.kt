@@ -16,8 +16,6 @@ object DatabaseFactory {
         transaction {
             SchemaUtils.create(Users)
             SchemaUtils.create(Officers)
-            SchemaUtils.create(Managers)
-            SchemaUtils.create(Testers)
             SchemaUtils.create(TestCenters)
             SchemaUtils.create(TestKits)
             SchemaUtils.create(Patients)

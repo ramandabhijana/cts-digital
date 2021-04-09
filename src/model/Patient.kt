@@ -1,8 +1,7 @@
 package com.sestikom.ctsdigital.model
 
-import org.joda.time.LocalDate
+import org.joda.time.*
 import org.joda.time.format.*
-import java.time.format.DateTimeFormatter.*
 
 data class Patient(
         override val username: String = "",

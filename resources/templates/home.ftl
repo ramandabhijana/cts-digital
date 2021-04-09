@@ -15,14 +15,14 @@
 <body>
 <nav class="navbar sticky-top navbar-light bg-white border-bottom shadow-sm p-3 px-md-4 mb-3 justify-content-between">
     <h5 class="my-0 mr-md-auto font-weight-normal">CTS Digital</h5>
-    <a class="btn btn-outline-primary" href="/login">Log in</a>
+    <a class="btn btn-outline-primary" name="login-button" href="/login">Log in</a>
 </nav>
 
 <main role="main">
     <div class="jumbotron container">
         <h1>Let's connect</h1>
         <p class="lead mb-5">Calling all test center managers: Let's unite in this digital movement. Register your test center to be at the forefront of the COVID-19 testing administration along with many other test centers</p>
-        <a class="btn btn-lg btn-primary" href="/manager/signup" role="button">Register now &raquo;</a>
+        <a class="btn btn-lg btn-primary" href="/manager/signup" name="register-btn" role="button">Register now &raquo;</a>
     </div>
 
     <div class="py-5 bg-light">
@@ -54,49 +54,36 @@
 
             <div class="d-flex align-items-center p-3 my-3 text-black-50 rounded shadow-sm" style="background-color: #e3f2fd;">
                 <div class="lh-100">
-                    <h6 class="mb-0 text-primary lh-100">Patients</h6>
+                    <h6 class="mb-0 text-primary lh-100">Covid-19 Tests</h6>
                 </div>
             </div>
             <div class="my-3 p-3 bg-white rounded shadow-sm">
                 <!-- Empty placeholder -->
-                <div class="media text-muted pt-3">
-                    <p class="media-body pb-3 mb-0 small lh-125 ">
-                        <strong class="d-block text-gray-dark">NO DATA AVAILABLE</strong>
-                    </p>
-                </div>
-<#--                <div class="media text-muted pt-3">-->
-<#--                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">-->
-<#--                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">-->
-<#--                        <div class="d-flex justify-content-between align-items-center w-100">-->
-<#--                            <strong class="text-gray-dark">Full Name</strong>-->
-<#--                            <span class="badge badge-pill badge-success">Completed</span>-->
-<#--                        </div>-->
-<#--                        <span class="d-block">@username</span>-->
-<#--                        <span class="d-block pt-3">Tested on March 14, 2021</span>-->
-<#--                    </div>-->
-<#--                </div>-->
-
-<#--                <div class="media text-muted pt-3">-->
-<#--                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">-->
-<#--                    <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">-->
-<#--                        <div class="d-flex justify-content-between align-items-center w-100">-->
-<#--                            <strong class="text-gray-dark">Full Name</strong>-->
-<#--                            <span class="badge badge-pill badge-warning">Pending</span>-->
-<#--                        </div>-->
-<#--                        <span class="d-block">@username</span>-->
-<#--                        <span class="d-block pt-3">Tested on March 14, 2021</span>-->
-<#--                    </div>-->
-<#--                </div>-->
-<#--                <div class="media text-muted pt-3">-->
-<#--                    <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">-->
-<#--                    <div class="media-body pb-3 mb-0 small lh-125 ">-->
-<#--                        <div class="d-flex justify-content-between align-items-center w-100">-->
-<#--                            <strong class="text-gray-dark">Full Name</strong>-->
-<#--                            <span class="badge badge-pill badge-warning">Pending</span>-->
-<#--                        </div>-->
-<#--                        <span class="d-block">@username</span>-->
-<#--                    </div>-->
-<#--                </div>-->
+                <#if centers?? && (centers?size > 0)>
+                    <#list tests as test>
+                        <div class="media text-muted pt-3">
+                            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <strong class="text-gray-dark">${test.patientName}</strong>
+                                    <#assign status= test.status.stringValue >
+                                    <#if status?contains("Complete")>
+                                        <span class="badge badge-pill badge-success">Completed</span>
+                                        <#else>
+                                            <span class="badge badge-pill badge-warning">Pending</span>
+                                    </#if>
+                                </div>
+                                <span class="d-block">${test.patientUsername}</span>
+                                <span class="d-block pt-3">Tested on ${test.testDate}</span>
+                            </div>
+                        </div>
+                    </#list>
+                    <#else>
+                        <div class="media text-muted pt-3">
+                            <p class="media-body pb-3 mb-0 small lh-125 ">
+                                <strong class="d-block text-gray-dark">NO DATA AVAILABLE</strong>
+                            </p>
+                        </div>
+                </#if>
 
             </div>
         </div>

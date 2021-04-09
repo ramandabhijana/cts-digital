@@ -29,9 +29,7 @@ fun Route.recordTester(db: Repository, hashFunction: (String) -> String) {
     val user = getUserFromSession(call.sessions.get<CTSSession>(), db)
     when {
       user == null
-      -> call.respond(FreeMarkerContent(
-              "login.ftl", mapOf("error" to it.error))
-      )
+      -> call.redirect(Login(error = SESSION_TIMED_OUT))
       user !is TestCenterManager
       -> call.respondText("No access")
       user.position == null

@@ -30,9 +30,7 @@ fun Route.manageKit(db: Repository) {
     val user = getUserFromSession(call.sessions.get<CTSSession>(), db)
     when {
       user == null
-      -> call.respond(FreeMarkerContent(
-              "logindummy.ftl", mapOf("error" to it.error))
-      )
+      -> call.redirect(Login(error = SESSION_TIMED_OUT))
       user !is TestCenterManager
       -> call.respondText("No access")
       user.position == null
@@ -60,7 +58,7 @@ fun Route.manageKit(db: Repository) {
       val params = call.receive<Parameters>()
       val manageKit = ManageKit()
       val id = params["selectedtestkitid"]
-      val name = params["name"]
+      val name = params["kitName"]
       val manager = (user as TestCenterManager)
       try {
         when {
@@ -68,20 +66,28 @@ fun Route.manageKit(db: Repository) {
           -> return@post call.redirect(it)
           id == null
           -> {
-            val receivedStock = params["stock"]?.toInt()
-                    ?: return@post call.redirect(
-                            manageKit.copy(error = "Incorrect input for stock")
-                    )
+            val receivedStock = params["stock"]?.toInt()?.let {
+              if (it <= 0) return@post call.redirect(
+                      manageKit.copy(error = "Stock must not be 0 or less")
+              )
+              return@let it
+            } ?: return@post call.redirect(
+                    manageKit.copy(error = "Incorrect input for stock")
+            )
             val kit = manager.createTestKit(name!!, receivedStock)
             db.createTestKit(kit, manager.center?.id!!)
             call.redirect(manageKit.copy(success = "A new test kit was created"))
           }
           name == null
           -> {
-            val newStock = params["newstock"]?.toInt()
-                    ?: return@post call.redirect(
-                            manageKit.copy(error = "Incorrect input for stock")
-                    )
+            val newStock = params["newstock"]?.toInt()?.let {
+              if (it <= 0) return@post call.redirect(
+                      manageKit.copy(error = "Stock must not be 0 or less")
+              )
+              return@let it
+            } ?: return@post call.redirect(
+                    manageKit.copy(error = "Incorrect input for stock")
+            )
             val testKits = db.getTestKits(user.center?.id!!)
             val kit = testKits.single { kit -> kit.id == id.toInt() }
             val adjustedKit = manager.createTestKit(kit, newStock)

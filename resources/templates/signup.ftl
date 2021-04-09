@@ -44,7 +44,7 @@
                                    name="username"
                                    class="form-control ${error?contains("Username")?then("is-invalid", " ")}"
                                    id="username">
-                            <div class="invalid-feedback">
+                            <div name="invalid-username" class="invalid-feedback">
                                 ${error}
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                                 ${error}
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                        <button type="submit" name="signup-btn" class="btn btn-primary btn-block">Sign Up</button>
                     </form>
                 </div>
             </div>
@@ -66,7 +66,7 @@
     </div>
 </div>
 
-<footer class="bg-dark mt-5" style="padding: 2.5rem 0;
+<footer class="bg-dark mt-5 fixed-bottom" style="padding: 2.5rem 0;
     color: #999;
     text-align: center;
     border-top: .05rem solid #e5e5e5;

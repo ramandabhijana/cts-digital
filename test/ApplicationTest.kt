@@ -1,24 +1,39 @@
 package com.sestikom.ctsdigital
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.routing.*
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.string.shouldContain
 import io.ktor.http.*
-import freemarker.cache.*
-import io.ktor.freemarker.*
 import io.ktor.locations.*
-import kotlin.test.*
 import io.ktor.server.testing.*
 
-class ApplicationTest {
-    @Test
-    fun testRoot() {
-        withTestApplication({ module(testing = true) }) {
-            handleRequest(HttpMethod.Get, "/").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals("HELLO WORLD!", response.content)
-            }
-        }
-    }
-}
+import io.kotest.matchers.string.shouldContain
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.server.testing.*
+import org.junit.Test
+import kotlin.test.assertEquals
+
+//class ApplicationTest {
+//    @KtorExperimentalLocationsAPI
+//    @Test
+//    fun testRoot() {
+//        withTestApplication({ module(testing = true) }) {
+//            handleRequest(HttpMethod.Get, "/").apply {
+//                assertEquals(HttpStatusCode.OK, response.status())
+//                response.content shouldContain "Let's connect"
+//            }
+//        }
+//    }
+//}
+
+
+//@KtorExperimentalLocationsAPI
+//class CTSTest: StringSpec({
+//    "g" {
+//        withTestApplication(moduleFunction = { module(testing = true) }) {
+//            handleRequest(HttpMethod.Get, "/").apply {
+//                response.content shouldContain "Lets konek"
+//            }
+//        }
+//    }
+//})

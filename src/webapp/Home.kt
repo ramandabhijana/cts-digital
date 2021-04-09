@@ -17,9 +17,10 @@ class Home
 fun Route.home(db: Repository) {
   get<Home> {
     val centers = db.getTestCenters()
+    val tests = db.getAllTests()
     call.respond(FreeMarkerContent(
             "home.ftl",
-            mapOf("centers" to centers)
+            mapOf("centers" to centers, "tests" to tests),
     ))
   }
 }
