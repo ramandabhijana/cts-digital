@@ -4,7 +4,7 @@
     </div>
 
     <div class="list-group list-group-flush">
-        <a href="#" class="list-group-item list-group-item-action ">Dashboard</a>
+        <a href="/manager/dashboard" class="list-group-item list-group-item-action ${activeIndex?contains("0")?then("active", " ")}">Dashboard</a>
         <a href="/manager/recordtester" class="list-group-item list-group-item-action ${activeIndex?contains("1")?then("active", " ")}">Record Tester</a>
         <a href="/manager/managekit" class="list-group-item list-group-item-action ${activeIndex?contains("2")?then("active", " ")}">Manage Test Kit Stock</a>
         <a href="/officer/viewreport" class="list-group-item list-group-item-action ${activeIndex?contains("3")?then("active", " ")}">Generate Test Report</a>

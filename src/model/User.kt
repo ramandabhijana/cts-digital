@@ -6,9 +6,9 @@ import java.io.Serializable
 
 abstract class User: Serializable, Principal {
     abstract val username: String
-    abstract val password: String
-    abstract val firstName: String
-    abstract val lastName: String
+    abstract var password: String
+    abstract var firstName: String
+    abstract var lastName: String
 
     fun login(username: String, password: String): String? {
         return when {

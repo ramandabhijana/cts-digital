@@ -22,10 +22,10 @@ suspend fun ApplicationCall.redirectUser(user: User) {
     is TestCenterManager
     -> {
       if (user.position == null) redirect(CenterRegistration())
-      else redirect(RecordTester())
+      else redirect(ManagerDashboard())
     }
     is Tester
-    -> redirect(RecordTest())
+    -> redirect(TesterDashboard())
 
     is Patient
     -> redirect(PatientDashboard())

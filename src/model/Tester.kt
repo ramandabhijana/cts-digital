@@ -7,9 +7,9 @@ data class Tester(
         override val center: TestCenter? = null,
         override val position: OfficerPosition? = null,
         override val username: String = "",
-        override val password: String = "",
-        override val firstName: String = "",
-        override val lastName: String = ""
+        override var password: String = "",
+        override var firstName: String = "",
+        override var lastName: String = ""
 ): CenterOfficer() {
 
   fun createPatient(

@@ -12,6 +12,8 @@ interface Repository {
     suspend fun createTester(tester: Tester, managerUsername: String)
     suspend fun createTestKit(kit: TestKit, centerId: Int)
     suspend fun getTestKits(centerId: Int): List<TestKit>
+    suspend fun sumOfTestKitStock(centerId: Int): Int
+    suspend fun getAllTesters(centerId: Int): List<Map<String, String>>
     suspend fun updateStock(kitId: Int, newStock: Int)
     suspend fun getAllPatients(): List<Patient>
     suspend fun createTest(test: CovidTest,
@@ -34,5 +36,13 @@ interface Repository {
             dob: LocalDate? = null,
             password: String? = null
     )
+    suspend fun getAllTestsPerformedBy(testerUsername: String): List<Map<String, String>>
     suspend fun getTestsHistoryByCenterId(centerId: Int): List<CovidTest>
+    suspend fun getTestHistory(patientUsername: String): List<Map<String, Any?>>
+    suspend fun updateOfficerProfile(
+            username: String,
+            firstName: String? = null,
+            lastName: String? = null,
+            password: String? = null
+    )
 }

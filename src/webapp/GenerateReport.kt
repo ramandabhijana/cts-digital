@@ -23,7 +23,7 @@ fun Route.generateReport(db: Repository) {
     val user = getUserFromSession(call.sessions.get<CTSSession>(), db)
     when {
       user == null
-      -> call.redirect(Login())
+      -> call.redirect(Login(error = SESSION_TIMED_OUT))
       user !is CenterOfficer
       -> call.respondText("No access")
       user.center == null

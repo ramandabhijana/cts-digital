@@ -67,6 +67,9 @@ fun Application.module(testing: Boolean = false) {
         patientDashboard(db)
         updateProfile(db, hashFunction)
         generateReport(db)
+        testerDashboard(db)
+        managerDashboard(db)
+        testHistory(db)
     }
 }
 

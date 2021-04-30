@@ -1,5 +1,7 @@
 package com.sestikom.ctsdigital.model
 
+import org.joda.time.*
+import org.joda.time.format.*
 import java.util.*
 
 abstract class CenterOfficer: User() {
@@ -15,7 +17,12 @@ abstract class CenterOfficer: User() {
           lastName: String?,
           extraField: Map<String, String>?
   ): User {
-    TODO("Not yet implemented")
+    firstName?.let { this.firstName = it }
+    lastName?.let { this.lastName = it }
+    extraField?.let {
+      it["password"]?.let { this.password = it }
+    }
+    return this
   }
 
   data class TestReport(

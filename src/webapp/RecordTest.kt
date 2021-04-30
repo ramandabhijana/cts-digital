@@ -19,24 +19,28 @@ const val RECORD_TEST = "/tester/recordtest"
 @KtorExperimentalLocationsAPI
 @Location(RECORD_TEST)
 data class RecordTest(
-        val activeIndex: String = "1",
-        val error: String? = null,
-        val success: String? = null,
-        val testDetail: String? = null,
-        val kits: List<TestKit> = listOf(),
-        val patients: List<Patient> = listOf()
+  val activeIndex: String = "1",
+  val error: String? = null,
+  val success: String? = null,
+  val testDetail: String? = null,
+  val kits: List<TestKit> = listOf(),
+  val patients: List<Patient> = listOf()
 )
 
 @KtorExperimentalLocationsAPI
 fun Route.recordTest(db: Repository, hashFunction: (String) -> String) {
   get<RecordTest> {
     val user = getUserFromSession(call.sessions.get<CTSSession>(), db)
-    when (user) {
-      null
-      -> call.redirect(Login())
-      !is Tester -> call.respondText("No access")
-      else -> {
-        val testKits = db.getTestKits(user.center?.id!!)
+    when {
+      user == null
+      -> call.redirect(Login(error = SESSION_TIMED_OUT))
+      user !is Tester
+      -> call.respondText("No access")
+      db.sumOfTestKitStock(user.center?.id!!) == 0
+      -> call.redirect(TesterDashboard())
+      else
+      -> {
+        val testKits = db.getTestKits(user.center.id!!)
         val patients = db.getAllPatients()
         call.respond(FreeMarkerContent(
                 "recordtest.ftl",
@@ -112,7 +116,6 @@ fun Route.recordTest(db: Repository, hashFunction: (String) -> String) {
       response.errorMessage?.let {
         call.redirect(recordTest.copy(error = it))
       } ?: run {
-
         // New Patient
         val patient = response.user as Patient
         val hash = hashFunction(patient.password)
@@ -140,7 +143,7 @@ fun Route.recordTest(db: Repository, hashFunction: (String) -> String) {
                   )
           )
         } catch (e: Throwable) {
-          call.respondText(e.toString())
+          call.redirect(recordTest.copy(error = "Username \'$username\' is already taken"))
         }
       }
     }

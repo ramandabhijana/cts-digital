@@ -3,10 +3,13 @@ package com.sestikom.ctsdigital.repository
 import com.sestikom.ctsdigital.model.*
 import com.sestikom.ctsdigital.model.mapper.*
 import com.sestikom.ctsdigital.model.table.*
+import com.sestikom.ctsdigital.model.table.CovidTests.id
+import com.sestikom.ctsdigital.model.table.CovidTests.integer
 import com.sestikom.ctsdigital.model.table.CovidTests.kitId
 import com.sestikom.ctsdigital.model.table.CovidTests.patientId
 import com.sestikom.ctsdigital.model.table.CovidTests.status
 import com.sestikom.ctsdigital.model.table.CovidTests.testerId
+import com.sestikom.ctsdigital.model.table.CovidTests.varchar
 import com.sestikom.ctsdigital.model.table.Officers.center
 import com.sestikom.ctsdigital.model.table.Officers.position
 import com.sestikom.ctsdigital.model.table.Officers.username
@@ -206,9 +209,7 @@ class CTSRepository: Repository {
             val previousStock = TestKits
                     .slice(stock)
                     .select { (TestKits.id eq kitId) }
-                    .mapNotNull {
-                        it[stock]
-                    }
+                    .mapNotNull { it[stock] }
                     .single()
             TestKits.update({ TestKits.id eq kitId }) {
                 it[stock] = previousStock - 1
@@ -367,4 +368,99 @@ class CTSRepository: Repository {
                         )
                     }
         }
+
+    override suspend fun getAllTestsPerformedBy(testerUsername: String): List<Map<String, String>> {
+        return dbQuery {
+            CovidTests
+                    .innerJoin(Users, { patientId }, { username } )
+                    .select { testerId eq testerUsername }
+                    .map {
+                        mapOf(
+                                "id" to it[id].toString(),
+                                "username" to it[patientId],
+                                "name" to it[Users.fullName],
+                                "status" to it[status].toString()
+                        )
+                    }
+        }
+    }
+
+    override suspend fun getAllTesters(centerId: Int): List<Map<String, String>> {
+        return dbQuery {
+            Officers
+                    .innerJoin(Users, { username }, { username })
+                    .innerJoin(CovidTests, { username }, { testerId })
+                    .slice(username, Users.fullName, username.count())
+                    .select { (position eq OfficerPosition.TESTER.ordinal) and
+                            (center eq centerId)
+                    }
+                    .groupBy(username, Users.fullName)
+                    .map {
+                        mapOf(
+                                "username" to it[username],
+                                "fullName" to it[Users.fullName],
+                                "patientTested" to it[username.count()].toString()
+                        )
+                    }
+        }
+    }
+
+    override suspend fun sumOfTestKitStock(centerId: Int): Int {
+        return dbQuery {
+            TestKits
+                    .slice(stock.sum())
+                    .select { (TestKits.centerId eq centerId) }
+                    .map {
+                        it[stock.sum()]!!
+                    }
+                    .single()
+        }
+    }
+
+    override suspend fun getTestHistory(patientUsername: String): List<Map<String, Any?>> {
+        return dbQuery {
+            CovidTests
+                    .innerJoin(TestKits, { kitId }, { TestKits.id })
+                    .innerJoin(Users, { testerId }, { username })
+                    .innerJoin(Officers, { username }, { testerId })
+                    .innerJoin(TestCenters, { center }, { TestCenters.id })
+                    .select { patientId eq patientUsername }
+                    .map {
+                        mapOf(
+                                "center" to it[TestCenters.name],
+                                "test" to CovidTest(
+                                        id = it[CovidTests.id].value,
+                                        testDate = it[CovidTests.testDate].toLocalDate(),
+                                        result = TestResult.valueFrom(it[CovidTests.result]),
+                                        resultDate = it[CovidTests.resultDate]?.toLocalDate(),
+                                        status = TestStatus.valueFrom(it[status]),
+                                        patientUsername = it[patientId],
+                                        testerUsername = it[testerId],
+                                        testerName = it[Users.fullName],
+                                        kitId = it[kitId],
+                                        kitName = it[TestKits.name]
+                                )
+                        )
+                    }
+        }
+    }
+
+    override suspend fun updateOfficerProfile(username: String, firstName: String?, lastName: String?, password: String?) {
+        dbQuery {
+            password?.let { p ->
+                Users.update({Users.username eq username}) {
+                    it[passwordHash] = p
+                }
+            }
+            val previousName = Users
+                    .slice(Users.fullName)
+                    .select { Users.username eq username }
+                    .map { it[Users.fullName] }
+                    .single()
+            if (previousName != "$firstName $lastName")
+                Users.update({ Users.username eq username }) {
+                    it[fullName] = "$firstName $lastName"
+                }
+        }
+    }
 }
