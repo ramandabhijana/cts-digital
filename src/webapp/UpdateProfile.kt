@@ -29,13 +29,13 @@ fun Route.updateProfile(db: Repository, hashFunction: (String) -> String) {
       val firstName = params["firstName"] ?: throw IllegalArgumentException("Missing parameter firstName")
       val lastName = params["lastName"] ?: throw IllegalArgumentException("Missing parameter lastName")
       val password = params["password"] ?: throw IllegalArgumentException("Missing parameter password")
+      val extraField = mutableMapOf<String, String>()
+      if (password.isNotEmpty())
+        extraField["password"] = hashFunction(password)
       if (user is Patient) {
         val dob = params["dob"] ?: throw IllegalArgumentException("Missing parameter dob")
-        val extraField = mutableMapOf<String, String>()
         if (dob != user.dobString)
           extraField["dob"] = dob
-        if (password.isNotEmpty())
-          extraField["password"] = hashFunction(password)
         user.updateProfile(firstName, lastName, extraField)
         try {
           db.updatePatientProfile(
@@ -50,7 +50,21 @@ fun Route.updateProfile(db: Repository, hashFunction: (String) -> String) {
           call.respondText(e.toString())
         }
       } else {
-
+        user.updateProfile(firstName, lastName, extraField)
+        try {
+          db.updateOfficerProfile(
+                  user.username,
+                  user.firstName,
+                  user.lastName,
+                  if (extraField["password"] == null) null else user.password
+          )
+          if (user is Tester)
+            call.redirect(TesterDashboard())
+          else if (user is TestCenterManager)
+            call.redirect(ManagerDashboard())
+        } catch (e: Throwable) {
+          call.respondText(e.toString())
+        }
       }
     }
   }

@@ -1,7 +1,6 @@
 <div class="modal fade" id="update_profile">
     <div class="modal-dialog mw-100 w-75">
         <div class="modal-content">
-
             <div class="modal-header">
                 <h5 class="modal-title">Update Profile</h5>
             </div>
